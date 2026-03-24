@@ -9,11 +9,20 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
-# In-memory storage (최근 3개)
-received_messages: list[dict] = []
-
 DIST_DIR = Path(__file__).parent / "front" / "dist"
 USER_INPUT_FILE = Path(__file__).parent / "front" / "user_input.json"
+MESSAGES_FILE = Path(__file__).parent / "front" / "messages.json"
+
+
+def load_messages() -> list[dict]:
+    try:
+        return json.loads(MESSAGES_FILE.read_text(encoding="utf-8"))
+    except Exception:
+        return []
+
+
+def save_messages(messages: list[dict]):
+    MESSAGES_FILE.write_text(json.dumps(messages, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 class MessageIn(BaseModel):
@@ -35,15 +44,26 @@ def post_message(msg: MessageIn):
         "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
     }
 
-    received_messages.insert(0, new_message)
-    del received_messages[3:]
+    messages = load_messages()
+    messages.insert(0, new_message)
+    del messages[3:]
+    save_messages(messages)
 
     return new_message
 
 
 @app.get("/api/message")
 def get_messages():
-    return received_messages
+    return load_messages()
+
+
+@app.get("/api/input")
+def get_latest_input():
+    try:
+        data = json.loads(USER_INPUT_FILE.read_text(encoding="utf-8"))
+        return data[-1] if data else {}
+    except Exception:
+        return {}
 
 
 @app.post("/api/save-input")
