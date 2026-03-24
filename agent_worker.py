@@ -15,7 +15,7 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 # ── 설정 ──────────────────────────────────────────────────────────────
-RENDER_URL = os.getenv("RENDER_URL", "http://localhost:8000")
+RENDER_URL = "https://walwal-ke0m.onrender.com"
 POLL_INTERVAL = 5  # 초
 
 # ── OpenAI 클라이언트 ──────────────────────────────────────────────────
