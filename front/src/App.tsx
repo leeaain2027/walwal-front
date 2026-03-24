@@ -142,7 +142,7 @@ export default function App() {
       });
 
       if (response.ok) {
-        setInputText('');
+        // 텍스트 유지 (focus 시 초기화)
       } else {
         console.error("Save error:", await response.text());
       }
@@ -190,6 +190,7 @@ export default function App() {
                   type="text"
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
+                  onFocus={() => setInputText('')}
                   placeholder={currentPlaceholder}
                   className="w-full py-5 px-8 bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl text-lg focus:outline-none focus:ring-4 focus:ring-app-yellow transition-all placeholder:text-gray-400"
                 />
